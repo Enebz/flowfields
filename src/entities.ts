@@ -1,14 +1,5 @@
 import { Vector3 } from "./utils";
-import Canvas from "./canvas";
-import { createNoise3D, NoiseFunction3D } from 'simplex-noise';
-
-export class CanvasElement {
-  public canvas;
-
-  constructor(canvas: Canvas) {
-    this.canvas = canvas;
-  }
-}
+import Canvas, { CanvasElement } from "./canvas";
 
 export class Entity extends CanvasElement {
   public static count = 0;
@@ -165,107 +156,10 @@ export class Circle extends Entity {
 
   draw() {
     super.draw();
-    this.color = "hsla(" + this.pos.y * 350 / this.canvas.height + ", 100%, 100%, 1)"
     this.canvas.ctx.beginPath()
     this.canvas.ctx.arc(this.pos.x, this.pos.y, this.radius, 0, 2 * Math.PI);
     this.canvas.ctx.closePath();
     this.canvas.ctx.fillStyle = this.color;
     this.canvas.ctx.fill();
-  }
-}
-
-export class VectorField extends CanvasElement {
-  public columns: number;
-  public rows: number;
-  public spacing: number;
-  public vectors: Vector3[];
-  public affected: Entity[]; 
-
-  constructor(canvas: Canvas, columns: number = 2 ** 5) {
-    super(canvas);
-    this.columns = columns;
-    this.spacing = this.canvas.width / this.columns;
-    this.rows = Math.ceil(this.canvas.height / this.spacing);
-    this.vectors = Array(this.columns * this.rows);
-    this.affected = [];
-  }
-
-  getVector(x: number, y: number) {
-    let index = x + y * this.columns;
-    return this.vectors[index];
-  }
-
-  affect(affected: Entity) {
-    let vec_x = Math.floor(affected.pos.x / this.spacing);
-    let vec_y = Math.floor(affected.pos.y / this.spacing);
-
-    if ((vec_x >= 0 && vec_x < this.columns) && (vec_y >= 0 && vec_y < this.rows)) {
-      affected.force.add(this.getVector(vec_x, vec_y));
-    }
-  }
-
-  draw() {
-    for (var v = 0; v < this.vectors.length; v++) {
-      let x = v % this.columns
-      let y = Math.floor(v / this.columns)
-      let normalized = this.vectors[v].copy().normalize();
-
-      this.canvas.ctx.strokeStyle = "#FFFFFF";
-      this.canvas.ctx.beginPath();
-      this.canvas.ctx.moveTo(x * this.spacing, y * this.spacing);
-      this.canvas.ctx.lineTo(x * this.spacing + normalized.x * 12, y * this.spacing + normalized.y * 12);
-      this.canvas.ctx.closePath();
-      this.canvas.ctx.stroke();
-  
-      this.canvas.ctx.strokeStyle = "rgba(0, 255, 255, 1)";
-      this.canvas.ctx.lineWidth = 0.5;
-      this.canvas.ctx.beginPath();
-      this.canvas.ctx.moveTo(x * this.spacing, y * this.spacing);
-      this.canvas.ctx.lineTo(x * this.spacing + 8, y * this.spacing);
-      this.canvas.ctx.moveTo(x * this.spacing, y * this.spacing);
-      this.canvas.ctx.lineTo(x * this.spacing, y * this.spacing + 8);
-      this.canvas.ctx.closePath();
-      this.canvas.ctx.stroke();
-    }
-  }
-}
-
-export class PerlinField extends VectorField {
-  public noise: NoiseFunction3D;
-  public noiseScale: number;
-  public timeScale: number;
-  public timer: number = 0;
-  
-  constructor(canvas: Canvas, columns: number = 2 ** 5, noiseScale: number = 0.01, timeScale: number = 0.01) {
-    super(canvas, columns);
-    this.noise = createNoise3D();
-    this.noiseScale = noiseScale;
-    this.timeScale = timeScale;
-    
-    for (var y = 0; y < this.rows; y++) {
-      for (var x = 0; x < this.columns; x++) {
-        let noiseVal = (this.noise((x + 1) * this.noiseScale, (y + 1) * this.noiseScale, 0 * this.noiseScale * this.timeScale) + 1) / 2;
-        let theta = noiseVal * 2 * Math.PI;
-        let index = x + y * this.columns;
-        this.vectors[index] = new Vector3(Math.cos(theta), Math.sin(theta));
-      }
-    }
-  }
-
-  update(deltaTime: number) {
-    this.timer += deltaTime;
-    for (var y = 0; y < this.rows; y++) {
-      for (var x = 0; x < this.columns; x++) {
-        let noiseVal = (this.noise((x + 1) * this.noiseScale, (y + 1) * this.noiseScale, this.timer * this.noiseScale * this.timeScale) + 1) / 2;
-        let theta = noiseVal * 2 * Math.PI;
-        let index = x + y * this.columns;
-        this.vectors[index].x = Math.cos(theta) * 40;
-        this.vectors[index].y = Math.sin(theta) * 40;
-      }
-    }
-  }
-
-  draw() {
-    super.draw()
   }
 }

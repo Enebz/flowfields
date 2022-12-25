@@ -1,3 +1,5 @@
+import Engine from "./engine";
+
 export default class Renderer {
   public fps: number;
   public fpsInterval: number;
@@ -8,12 +10,12 @@ export default class Renderer {
   public deltaTime: number = 0;
   public engine: Engine;
   
-  constructor(fps: number, engine: Engine) {
+  constructor(engine: Engine, fps: number) {
+    this.engine = engine;
     this.fps = fps;
     this.fpsInterval = 1000 / this.fps;
     this.then = Date.now();
     this.startTime = this.then;
-    this.engine = engine;
   }
 
   tick() {
@@ -42,6 +44,7 @@ export default class Renderer {
 
   run() {
     this.engine.start();
+    this.engine.draw()
     this.tick();
   }
 }
