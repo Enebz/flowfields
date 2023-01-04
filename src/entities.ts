@@ -143,14 +143,10 @@ export class Circle extends Entity {
   }
 
   update(deltaTime: number) {
-    // this.gravity();
-
     /// POST CALCULATION FOR COLLISIONS ETC
-    // this.circleCollision();
-    // this.wallBounce();
-    // this.wallRepeat();
+    //this.wallBounce();
+    //this.wallRepeat();
     this.wallRandom();
-
     super.update(deltaTime)
   }
 

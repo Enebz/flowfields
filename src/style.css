@@ -25,10 +25,71 @@ body {
   margin: 0;
   padding: 0;
 
-  width: 100%;
+  width: 100vw;
   height: 100vh;
+
+  background-color: black;
 }
 
-#canvas {
+#gui {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+#gui > div {
   position: absolute;
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1rem;
+  gap: 1rem;
+
+  background-color: rgba(30, 30, 30, 0.75);
+}
+
+#gui > div > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#gui > div > div > * {
+  width: 8rem;
+}
+
+#engine-panel {
+  top: 0;
+  left: 0;
+}
+
+#renderer-panel {
+  top: 0;
+  right: 0;
+}
+
+#canvases {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#main-scene {
+  z-index: 0;
+}
+
+#perlins-scene {
+  z-index: 1;
 }

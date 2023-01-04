@@ -7,9 +7,75 @@
     <title>Vite + TS</title>
   </head>
   <body>
-    <canvas id="canvas">
+    <div id="gui">
+      <div id="engine-panel">
+        <div>
+          <span>Particles</span>
+          <span id="particles-count-value">1000</span>
+          <input type="range" min="1" max="5000" value="1000" id="particles-count" />
+        </div>
+        <div>
+          <span>Speed</span>
+          <span id="speed-value">100</span>
+          <input type="range" min="1" max="500" value="100" id="speed" />
+        </div>
+        <div>
+          <span>Force</span>
+          <span id="force-value">100</span>
+          <input type="range" min="0.1" max="1000" value="10" step="0.1" id="force" />
+        </div>
+        <div>
+          <span>Noise Scale</span>
+          <span id="noise-scale-value">0.001</span>
+          <input type="range" min="0.00001" max="0.01" value="0.001" step="0.00001" id="noise-scale" />
+        </div>
+        <div>
+          <span>Time Scale</span>
+          <span id="time-scale-value">0.0001</span>
+          <input type="range" min="0" max="0.01" value="0.0001" step="0.0001" id="time-scale" />
+        </div>
+        <div>
+          <span>Trace</span>
+          <input type="checkbox" id="trace" />
+        </div>
+        <div>
+          <span>Show Vectors</span>
+          <input type="checkbox" id="show-vectors" />
+        </div>
+      </div>
 
-    </canvas>
+      <div id="renderer-panel">
+        <div>
+          <span>FPS</span>
+          <span id="fps-value">0</span>
+        </div>
+        <div>
+          <span>Frame #</span>
+          <span id="frames-value">0</span>
+        </div>
+        <div>
+          <span>T</span>
+          <span id="time-value">0</span>
+        </div>
+        <div>
+          <span>DT</span>
+          <span id="delta-time-value">0</span>
+        </div>
+        <div>
+          <span>wFPS</span>
+          <span id="wanted-fps-value">0</span>
+        </div>
+        <div>
+          <span>FPS Interval</span>
+          <span id="fps-interval-value">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="canvases">
+      
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

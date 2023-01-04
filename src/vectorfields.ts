@@ -63,19 +63,21 @@ export class PerlinField extends VectorField {
   public noiseScale: number;
   public timeScale: number;
   public angleCoef: number;
+  public forceCoef: number;
   public timer: number = 0;
   
-  constructor(canvas: Canvas, pos: Vector3 = new Vector3(0, 0), width: number, height: number, draw_spacing: number = 16, noiseScale: number = 0.001, timeScale: number = 0.0001, angleCoef: number = 1) {
+  constructor(canvas: Canvas, pos: Vector3 = new Vector3(0, 0), width: number, height: number, draw_spacing: number = 16, noiseScale: number = 0.001, timeScale: number = 0.0001, angleCoef: number = 1, forceCoef: number = 1) {
     super(canvas, pos, width, height, draw_spacing);
     this.noise = createNoise3D();
     this.noiseScale = noiseScale;
     this.timeScale = timeScale;
     this.angleCoef = angleCoef;
+    this.forceCoef = forceCoef;
 
     super.getVector = (x, y) => {
       let noiseVal = (this.noise(x * this.noiseScale, y * this.noiseScale, this.timer * this.timeScale) + 1) / 2;
       let theta = (noiseVal * 2 * Math.PI * this.angleCoef) % (2 * Math.PI);
-      return new Vector3(Math.cos(theta) * 25, Math.sin(theta) * 25);
+      return new Vector3(Math.cos(theta) * this.forceCoef, Math.sin(theta) * this.forceCoef);
     }
   }
 
