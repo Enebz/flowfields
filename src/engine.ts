@@ -1,49 +1,48 @@
 import Canvas from "./canvas";
 import { Entity, Circle } from "./entities";
+import UI, { CheckBox, Panel, Slider } from "./interface";
 import { Vector3 } from './utils';
 import { PerlinField } from "./vectorfields";
 
 export default class Engine1 {
+  public ui: UI;
+
+  public engine_panel: Panel;
+  public renderer_panel: Panel;
+
+  public particle_count: Slider;
+  public speed: Slider;
+  public fieldforce: Slider;
+  public noiseScale: Slider;
+  public timeScale: Slider;
+  public trace: CheckBox;
+  public showPerlinField: CheckBox;
+
   public particles: Circle[] = [];
   public perlinfield: PerlinField;
   public main_scene: Canvas;
   public perlinfield_scene: Canvas;
-
-  public particlesCountControl: HTMLInputElement;
-  public particlesCountControlValue: HTMLSpanElement;
-
-  public speedControl: HTMLInputElement;
-  public speedControlValue: HTMLSpanElement;
-
-  public forceControl: HTMLInputElement;
-  public forceControlValue: HTMLSpanElement;
-
-  public noiseScaleControl: HTMLInputElement;
-  public noiseScaleControlValue: HTMLSpanElement;
-
-  public timeScaleControl: HTMLInputElement;
-  public timeScaleControlValue: HTMLSpanElement;
-
-  public trace: HTMLInputElement;
-
-  public showVectors: HTMLInputElement;
   
-  constructor() {
+  constructor(ui: UI) {
+    // Canvas
     let canvases = document.getElementById("canvases") as HTMLElement;
     this.main_scene = new Canvas(canvases, "main-scene", window.innerWidth, window.innerHeight, "rgba(0, 0, 0, 0)");
     this.perlinfield_scene = new Canvas(canvases, "perlinfield-scene", window.innerWidth, window.innerHeight, "rgba(0, 0, 0, 0)");
-    
 
-    this.particlesCountControl = document.getElementById("particles-count") as HTMLInputElement;
-    this.particlesCountControlValue = document.getElementById("particles-count-value") as HTMLSpanElement;
-    this.particlesCountControl.oninput = (ev) => {
-      if (ev.target === null) return;
+    // UI
+    this.ui = ui;
 
-      const target = ev.target as HTMLInputElement;
+    // Panels
+    this.engine_panel = new Panel("engine-panel");
 
-      this.particlesCountControlValue.innerText = target.value;
+    this.ui.addPanel(this.engine_panel);
+
+    // Particles count
+    this.particle_count = new Slider("particle-count", "Particles count", 0, 1000, 100, 1);
+    this.particle_count.round = true;
+    this.particle_count.onInputCallback = (value) => {
       // Change entities array to new length by resizing it and filling it with new entities
-      this.particles.length = parseInt(target.value);
+      this.particles.length = value;
       for (let i = 0; i < this.particles.length; i++) {
         if (this.particles[i] === undefined) {
           this.particles[i] = new Circle(
@@ -53,71 +52,49 @@ export default class Engine1 {
             new Vector3(0, 0),
             1,
             1,
-            parseFloat(this.speedControl.value),
+            this.speed.value,
             "rgba(255, 255, 255, " + (this.trace.checked ? "0.025" : "1") + ")"
           );
         }
       }
     }
+    this.engine_panel.addElement(this.particle_count);
 
-    this.speedControl = document.getElementById("speed") as HTMLInputElement;
-    this.speedControlValue = document.getElementById("speed-value") as HTMLSpanElement;
-    this.speedControl.oninput = (ev) => {
-      if (ev.target === null) return;
-
-      const target = ev.target as HTMLInputElement;
-
-      this.speedControlValue.innerText = target.value;
+    // Particles speed
+    this.speed = new Slider("speed", "Speed", 0, 500, 100, 1);
+    this.speed.onInputCallback = (value) => {
       for (const entity of this.particles)
       {
-        entity.terminalVel = parseFloat(target.value);
+        entity.terminalVel = value;
       }
     }
+    this.engine_panel.addElement(this.speed);
 
-    this.forceControl = document.getElementById("force") as HTMLInputElement;
-    this.forceControlValue = document.getElementById("force-value") as HTMLSpanElement;
-    this.forceControl.oninput = (ev) => {
-      if (ev.target === null) return;
-
-      const target = ev.target as HTMLInputElement;
-
-      this.forceControlValue.innerText = target.value;
-      this.perlinfield.forceCoef = parseFloat(target.value);
+    // Field force
+    this.fieldforce = new Slider("fieldforce", "Field force", 0, 1000, 25, 1);
+    this.fieldforce.onInputCallback = (value: number) => {
+      this.perlinfield.forceCoef = value;
     }
+    this.engine_panel.addElement(this.fieldforce);
 
-    // UIPanel.slider("noise-scale", 0.01, 0.1, 0.01, 0.01, (value) => {
-    //   this.perlinfield.noiseScale = value;
-    // });
-
-    this.noiseScaleControl = document.getElementById("noise-scale") as HTMLInputElement;
-    this.noiseScaleControlValue = document.getElementById("noise-scale-value") as HTMLSpanElement;
-    this.noiseScaleControl.oninput = (ev) => {
-      if (ev.target === null) return;
-
-      const target = ev.target as HTMLInputElement;
-
-      this.noiseScaleControlValue.innerText = target.value;
-      this.perlinfield.noiseScale = parseFloat(target.value);
+    // Noise scale
+    this.noiseScale = new Slider("noise-scale", "Noise scale", 0.0001, 0.01, 0.0025, 0.0001);
+    this.noiseScale.onInputCallback = (value: number) => {
+      this.perlinfield.noiseScale = value;
     }
+    this.engine_panel.addElement(this.noiseScale);
 
-    this.timeScaleControl = document.getElementById("time-scale") as HTMLInputElement;
-    this.timeScaleControlValue = document.getElementById("time-scale-value") as HTMLSpanElement;
-    this.timeScaleControl.oninput = (ev) => {
-      if (ev.target === null) return;
-
-      const target = ev.target as HTMLInputElement;
-
-      this.timeScaleControlValue.innerText = target.value;
-      this.perlinfield.timeScale = parseFloat(target.value);
+    // Time scale
+    this.timeScale = new Slider("time-scale", "Time scale", 0, 0.0005, 0.0001, 0.00001);
+    this.timeScale.onInputCallback = (value: number) => {
+      this.perlinfield.timeScale = value;
     }
+    this.engine_panel.addElement(this.timeScale);
 
-    this.trace = document.getElementById("trace") as HTMLInputElement;
-    this.trace.addEventListener("change", (ev: Event) => {
-      if (ev.target === null) return;
-
-      const target = ev.target as HTMLInputElement;
-
-      if (target.checked) {
+    // Trace
+    this.trace = new CheckBox("trace", "Trace");
+    this.trace.onChangeCallback = (checked: boolean) => {
+      if (checked) {
         this.main_scene.clear();
 
         for (const particle of this.particles)
@@ -130,22 +107,22 @@ export default class Engine1 {
           particle.color = "rgba(255, 255, 255, 1)";
         }
       }
-    })
+    };
+    this.engine_panel.addElement(this.trace);
 
-    this.showVectors = document.getElementById("show-vectors") as HTMLInputElement;
-    this.showVectors.addEventListener("change", (ev: Event) => {
-      if (ev.target === null) return;
-
-      const target = ev.target as HTMLInputElement;
-
-      if (target.checked) {
+    // Show perlin field
+    this.showPerlinField = new CheckBox("show-vectors", "Show vectors");
+    this.showPerlinField.onChangeCallback = (checked: boolean) => {
+      if (checked) {
         this.perlinfield_scene.clear();
         this.perlinfield.draw();
       } else {
         this.perlinfield_scene.clear();
       }
-    });
+    };
+    this.engine_panel.addElement(this.showPerlinField);
 
+    // Reset
     document.addEventListener("keydown", (ev) => {
       if (ev.key === "r") {
         this.start();
@@ -162,15 +139,15 @@ export default class Engine1 {
       this.main_scene.width,
       this.main_scene.height,
       40,
-      parseFloat(this.noiseScaleControl.value),
-      parseFloat(this.timeScaleControl.value),
+      this.noiseScale.value,
+      this.timeScale.value,
       2,
-      parseFloat(this.forceControl.value)
+      this.fieldforce.value
     );
 
     this.particles = [];
     
-    for (var i = 0; i < parseInt(this.particlesCountControl.value); i++) {
+    for (var i = 0; i < this.particle_count.value; i++) {
       let p = new Circle(
         this.main_scene,
         new Vector3(Math.random() * this.perlinfield.width + this.perlinfield.pos.x, Math.random() * this.perlinfield.height + this.perlinfield.pos.y),
@@ -178,7 +155,7 @@ export default class Engine1 {
         new Vector3(0, 0),
         1,
         1,
-        parseFloat(this.speedControl.value),
+        this.speed.value,
         "rgba(255, 255, 255, " + (this.trace.checked ? "0.025" : "1") + ")"
       );
       this.particles.push(p);
@@ -202,7 +179,7 @@ export default class Engine1 {
 
     this.perlinfield_scene.clear();
 
-    this.showVectors.checked ? this.perlinfield.draw() : null
+    this.showPerlinField.checked ? this.perlinfield.draw() : null
   
     for (const entity of this.particles) {
       entity.draw();

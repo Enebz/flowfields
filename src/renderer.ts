@@ -1,4 +1,5 @@
 import Engine from "./engine";
+import { Label, Panel } from "./interface";
 
 // This class is a game renderer which is responsible for rendering the game
 // to the screen. It is also responsible for handling the game loop.
@@ -18,31 +19,41 @@ export default class Renderer {
   public frames: number = 0;
   public engine: Engine;
 
-  public fpsDisplay: HTMLSpanElement;
-  public framesDisplay: HTMLSpanElement;
-  public timeDisplay: HTMLSpanElement;
-  public deltaTimeDisplay: HTMLSpanElement;
+  public renderer_panel: Panel;
 
-  public wantedFpsDisplay: HTMLSpanElement;
-  public fpsIntervalDisplay: HTMLSpanElement;
+  public fpsDisplay: Label;
+  public framesDisplay: Label;
+  public timeDisplay: Label;
+  public deltaTimeDisplay: Label;
+
+  public wantedFpsDisplay: Label;
+  public fpsIntervalDisplay: Label;
   
   constructor(engine: Engine, fps: number) {
     this.engine = engine;
     this.fps = fps;
     this.fpsInterval = 1000 / this.fps;
 
+    this.renderer_panel = new Panel("renderer-panel");
+    this.engine.ui.addPanel(this.renderer_panel);
 
+    this.fpsDisplay = new Label("fps-value", "FPS: ");
+    this.renderer_panel.addElement(this.fpsDisplay);
 
-    this.fpsDisplay = document.getElementById('fps-value') as HTMLSpanElement;
-    this.framesDisplay = document.getElementById('frames-value') as HTMLSpanElement;
-    this.timeDisplay = document.getElementById('time-value') as HTMLSpanElement;
-    this.deltaTimeDisplay = document.getElementById('delta-time-value') as HTMLSpanElement;
+    this.framesDisplay = new Label("frames-value", "Frames: ");
+    this.renderer_panel.addElement(this.framesDisplay);
 
-    this.wantedFpsDisplay = document.getElementById('wanted-fps-value') as HTMLSpanElement;
-    this.fpsIntervalDisplay = document.getElementById('fps-interval-value') as HTMLSpanElement;
+    this.timeDisplay = new Label("time-value", "Time: ");
+    this.renderer_panel.addElement(this.timeDisplay);
 
-    this.wantedFpsDisplay.innerText = this.fps.toFixed(4);
-    this.fpsIntervalDisplay.innerText = this.fpsInterval.toFixed(4);
+    this.deltaTimeDisplay = new Label("delta-time-value", "Delta time: ");
+    this.renderer_panel.addElement(this.deltaTimeDisplay);
+
+    this.wantedFpsDisplay = new Label("wanted-fps-value", "Wanted FPS: ", this.fps.toFixed(4));
+    this.renderer_panel.addElement(this.wantedFpsDisplay);
+
+    this.fpsIntervalDisplay = new Label("fps-interval-value", "FPS interval: ", this.fpsInterval.toFixed(4));
+    this.renderer_panel.addElement(this.fpsIntervalDisplay);
 
     document.addEventListener("keydown", (ev: KeyboardEvent) => {
       switch (ev.key) {
@@ -82,17 +93,17 @@ export default class Renderer {
       this.then = this.now;
       
       // Display current FPS'
-      this.fpsDisplay.innerText = (1000 / this.deltaTime).toFixed(0);
+      this.fpsDisplay.text = (1000 / this.deltaTime).toFixed(0);
       
 
       // Display current amount of frames that has passed
-      this.framesDisplay.innerText = this.frames.toString();
+      this.framesDisplay.text = this.frames.toString();
 
       // Display current time
-      this.timeDisplay.innerText = this.elapsed.toFixed(0) + "ms";
+      this.timeDisplay.text = this.elapsed.toFixed(0) + "ms";
 
       // Display current delta time
-      this.deltaTimeDisplay.innerText = this.deltaTime.toFixed(4) + "ms";
+      this.deltaTimeDisplay.text = this.deltaTime.toFixed(4) + "ms";
 
       if (!this.pause) {
         // Put your drawing code here
