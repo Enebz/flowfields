@@ -100,11 +100,13 @@ export default class Engine1 {
         for (const particle of this.particles)
         {
           particle.color = "rgba(255, 255, 255, 0.025)";
+          particle.trace = true;
         }
       } else {
         for (const particle of this.particles)
         {
           particle.color = "rgba(255, 255, 255, 1)";
+          particle.trace = false;
         }
       }
     };
@@ -181,8 +183,8 @@ export default class Engine1 {
 
     this.showPerlinField.checked ? this.perlinfield.draw() : null
   
-    for (const entity of this.particles) {
-      entity.draw();
+    for (const particle of this.particles) {
+      particle.draw();
     }
   }
 }

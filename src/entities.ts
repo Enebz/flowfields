@@ -4,26 +4,33 @@ import Canvas, { CanvasElement } from "./canvas";
 export class Entity extends CanvasElement {
   public static count = 0;
   public id;
-  public pos;
-  public vel;
-  public terminalVel;
-  public acc;
+  public pos: Vector3;
+  public last_pos: Vector3;
+  public vel: Vector3;
+  public terminalVel: number;
+  public acc: Vector3;
   public force: Vector3;
-  public mass;
+  public draw_force: Vector3;
+  public mass: number;
 
   constructor(canvas: Canvas, pos: Vector3 = new Vector3(0, 0, 0), vel: Vector3 = new Vector3(0, 0, 0), acc: Vector3 = new Vector3(0, 0, 0), mass: number = 1, terminalVel: number) {
     super(canvas)
     this.id = Entity.count
     this.pos = pos;
+    this.last_pos = pos.copy();
     this.vel = vel;
     this.terminalVel = terminalVel;
     this.acc = acc;
     this.mass = mass;
     this.force = new Vector3();
+    this.draw_force = new Vector3();
     Entity.count++;
   }
 
   update(deltaTime: number) {
+    // SAVE OLD POS 
+    this.last_pos = this.pos.copy();
+
     // ACCELERATION
     this.acc.add(this.force.copy().divide(this.mass));    
 
@@ -38,7 +45,10 @@ export class Entity extends CanvasElement {
     // POSITION
     this.pos.add(this.vel.copy().multiply(deltaTime / 1000))
 
-    // RESET
+    // DRAW FORCE
+    this.draw_force = this.force.copy();
+
+    // // RESET
     this.acc.multiply(0);
     this.force.multiply(0);
   }
@@ -51,6 +61,7 @@ export class Entity extends CanvasElement {
 export class Circle extends Entity {
   public radius;
   public color;
+  public trace: boolean = false;
 
   constructor(canvas: Canvas, pos: Vector3=new Vector3(0, 0, 0), vel: Vector3=new Vector3(0, 0, 0), acc: Vector3=new Vector3(0, 0, 0), mass: number = 1, radius: number = 10, terminalVel: number, color: string = '#FFFFFF') {
     super(canvas, pos, vel, acc, mass, terminalVel);
@@ -150,6 +161,27 @@ export class Circle extends Entity {
     super.update(deltaTime)
   }
 
+  drawVelocity() {
+    this.canvas.ctx.beginPath();
+    this.canvas.ctx.moveTo(this.pos.x, this.pos.y);
+    this.canvas.ctx.lineTo(this.pos.x + this.vel.x / 10, this.pos.y + this.vel.y / 10);
+    this.canvas.ctx.closePath();
+    this.canvas.ctx.strokeStyle = "#EE3333";
+    this.canvas.ctx.stroke();
+  }
+
+  drawForce(colorFunc?: (force: number) => string) {
+    let force = this.draw_force.length();
+    // `rgb(${Math.floor((force) / 1000 * 255)}, ${Math.floor(255 - (force / 1000 * 255))}, 0)`
+    let color = colorFunc !== undefined ? colorFunc(force) : this.color;
+    this.canvas.ctx.beginPath();
+    this.canvas.ctx.moveTo(this.pos.x, this.pos.y);
+    this.canvas.ctx.lineTo(this.pos.x + this.draw_force.setLength(8).x, this.pos.y + this.draw_force.setLength(8).y);
+    this.canvas.ctx.closePath();
+    this.canvas.ctx.strokeStyle = color;
+    this.canvas.ctx.stroke();
+  }
+
   draw() {
     super.draw();
     this.canvas.ctx.beginPath()
@@ -157,5 +189,14 @@ export class Circle extends Entity {
     this.canvas.ctx.closePath();
     this.canvas.ctx.fillStyle = this.color;
     this.canvas.ctx.fill();
+
+    if (this.trace) {
+      this.canvas.ctx.beginPath();
+      this.canvas.ctx.moveTo(this.pos.x, this.pos.y);
+      this.canvas.ctx.lineTo(this.last_pos.x, this.last_pos.y);
+      this.canvas.ctx.closePath();
+      this.canvas.ctx.strokeStyle = this.color;
+      this.canvas.ctx.stroke();
+    }
   }
 }
