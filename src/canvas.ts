@@ -6,6 +6,7 @@ export default class Canvas {
   public height: number;
   public color: string;
   public mousePos: Vector3;
+  public onResizeCallback: (width: number, height: number) => void;
   public ctx: CanvasRenderingContext2D;
 
   constructor(parentNode: HTMLElement, id: string, width: number, height: number, color: string = "#000000") {
@@ -34,9 +35,13 @@ export default class Canvas {
   resizeEvent(ev: UIEvent) {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
-
+   
     this.node.width = this.width;
     this.node.height = this.height;
+
+    if (this.onResizeCallback) {
+      this.onResizeCallback(this.width, this.height);
+    }
   }
 
   clear() {

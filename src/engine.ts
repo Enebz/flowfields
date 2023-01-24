@@ -39,6 +39,12 @@ export default class Engine1 {
     this.main_scene = new Canvas(canvases, "main-scene", window.innerWidth, window.innerHeight, "rgba(0, 0, 0, 0)");
     this.perlinfield_scene = new Canvas(canvases, "perlinfield-scene", window.innerWidth, window.innerHeight, "rgba(0, 0, 0, 0)");
 
+    window.addEventListener("resize", (ev: UIEvent) => {
+      this.perlinfield.width = this.perlinfield_scene.width;
+      this.perlinfield.height = this.perlinfield_scene.height;
+      this.draw();
+    });
+
     // UI
     this.ui = ui;
 
