@@ -182,7 +182,6 @@ export class Circle extends Entity {
     let vel_copy = this.vel.copy().setLength(draw_length);
 
     if (this.trace) {
-      // When tracing velocity, draw a four sided polygon to show the velocity
       this.canvas.ctx.beginPath();
       this.canvas.ctx.moveTo(this.last_pos.x, this.last_pos.y);
       this.canvas.ctx.lineTo(this.last_pos.x + last_vel_copy.x, this.last_pos.y + last_vel_copy.y);
@@ -207,7 +206,6 @@ export class Circle extends Entity {
     let color = colorFunc !== undefined ? colorFunc(force) : this.color;
 
     if (this.trace) {
-      // When tracing velocity, draw a four sided polygon to show the force
       this.canvas.ctx.beginPath();
       this.canvas.ctx.moveTo(this.last_pos.x, this.last_pos.y);
       this.canvas.ctx.lineTo(this.last_pos.x + this.last_force[this.last_force.length - 2].setLength(draw_length).x, this.last_pos.y + this.last_force[this.last_force.length - 2].setLength(draw_length).y);

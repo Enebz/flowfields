@@ -88,13 +88,11 @@ export default class Renderer {
     if (this.deltaTime + (this.deltaTime % this.fpsInterval) > this.fpsInterval) {
       this.frames++;
 
-      // Get ready for next frame by setting then=now, but also adjust for your
-      // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
+      // Get ready for next frame by setting then=now
       this.then = this.now;
       
       // Display current FPS'
       this.fpsDisplay.text = (1000 / this.deltaTime).toFixed(0);
-      
 
       // Display current amount of frames that has passed
       this.framesDisplay.text = this.frames.toString();
@@ -106,7 +104,6 @@ export default class Renderer {
       this.deltaTimeDisplay.text = this.deltaTime.toFixed(4) + "ms";
 
       if (!this.pause) {
-        // Put your drawing code here
         this.engine.update(this.deltaTime);
         this.engine.draw();
       }
