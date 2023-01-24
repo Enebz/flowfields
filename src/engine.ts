@@ -39,6 +39,21 @@ export default class Engine1 {
     this.main_scene = new Canvas(canvases, "main-scene", window.innerWidth, window.innerHeight, "rgba(0, 0, 0, 0)");
     this.perlinfield_scene = new Canvas(canvases, "perlinfield-scene", window.innerWidth, window.innerHeight, "rgba(0, 0, 0, 0)");
 
+    // Resize event is a kinda bad solution, but I am feeling done with this project for now so I will leave it like this
+    // I will fix it later when I will have more time and motivation to do so :)
+    // I will probably make a new project with better code and better architecture
+    // I will probably use typescript combined with react for that project
+    // That project will include a lot of cool stuff like:
+    // - 3D rendering
+    // - 3D physics
+    // - 3D vector fields
+    // - 3D particles
+    // - Advanced UI
+    // - Advanced UI animations
+    // - Collision detection and response (2D and 3D)
+    // - Fluid simulation (2D)
+
+    // Resize event
     window.addEventListener("resize", (ev: UIEvent) => {
       this.perlinfield.width = this.perlinfield_scene.width;
       this.perlinfield.height = this.perlinfield_scene.height;
