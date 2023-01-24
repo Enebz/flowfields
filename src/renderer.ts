@@ -108,8 +108,8 @@ export default class Renderer {
       if (!this.pause) {
         // Put your drawing code here
         this.engine.update(this.deltaTime);
-      } 
-      this.engine.draw();
+        this.engine.draw();
+      }
     }
   }
 
